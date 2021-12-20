@@ -266,6 +266,7 @@ export const ScreenName = {
 
   OnboardingSetNewDeviceInfo: "OnboardingSetNewDeviceInfo",
   OnboardingSetNewDevice: "OnboardingSetNewDevice",
+  OnboardingSetupDeviceInformation: "OnboardingSetupDeviceInformation",
   OnboardingInfoModal: "OnboardingInfoModal",
   OnboardingRecoveryPhrase: "OnboardingRecoveryPhrase",
 

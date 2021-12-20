@@ -30,6 +30,7 @@ import OnboardingQuizFinal from "../../screens/Onboarding/OnboardingQuizFinal";
 import NavigationHeader from "../NavigationHeader";
 import NavigationOverlay from "../NavigationOverlay";
 import NavigationModalContainer from "../NavigationModalContainer";
+import OnboardingSetupDeviceInformation from "../../screens/Onboarding/steps/setupDevice/OnboardingSetupDeviceInformation";
 
 const Stack = createStackNavigator();
 const LanguageModalStack = createStackNavigator();
@@ -66,9 +67,39 @@ function LanguageModalNavigator(props: StackScreenProps<{}>) {
   );
 }
 
+function SetupDeviceStepNavigator(props: StackScreenProps<{}>) {
+  const options: Partial<StackNavigationOptions> = {
+    headerMode: "float",
+    header: props => (
+      // TODO: Replace this value with constant.purple as soon as the value is fixed in the theme
+      <Flex backgroundColor="background.main">
+        <NavigationHeader
+          {...props}
+          containerProps={{ backgroundColor: "transparent" }}
+        />
+      </Flex>
+    ),
+    headerStyle: { backgroundColor: "transparent" },
+  };
+
+  return (
+    <NavigationModalContainer {...props}>
+      <LanguageModalStack.Navigator>
+        <LanguageModalStack.Screen
+          name={ScreenName.OnboardingSetupDeviceInformation}
+          component={OnboardingSetupDeviceInformation}
+          options={{
+            title: "v3.onboarding.stepSetupDevice.pinCodeSetup.infoModal.title",
+            ...options,
+          }}
+        />
+      </LanguageModalStack.Navigator>
+    </NavigationModalContainer>
+  );
+}
+
 function SetupNewDeviceModalNavigator(props: StackScreenProps<{}>) {
   const route = useRoute();
-  
   const options: Partial<StackNavigationOptions> = {
     headerMode: "float",
     header: props => (
@@ -140,6 +171,12 @@ export default function OnboardingNavigator() {
         // TODO : index the name
         name="OnboardingSetupNewDevice"
         component={SetupNewDeviceModalNavigator}
+        options={modalOptions}
+      />
+      <Stack.Screen
+        // TODO : index the name
+        name="OnboardingSetupSteps"
+        component={SetupDeviceStepNavigator}
         options={modalOptions}
       />
 

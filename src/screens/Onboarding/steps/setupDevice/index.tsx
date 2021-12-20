@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { StyleSheet, Animated, SafeAreaView } from "react-native";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
+import { RenderTransitionProps } from "@ledgerhq/native-ui/components/Navigation/FlowStepper";
 import {
   Flex,
   FlowStepper,
@@ -8,7 +9,6 @@ import {
   Icons,
   Transitions,
 } from "@ledgerhq/native-ui";
-import { RenderTransitionProps } from "@ledgerhq/native-ui/components/Navigation/FlowStepper";
 
 import { ScreenName } from "../../../../const";
 import { DeviceNames } from "../../types";
@@ -32,6 +32,28 @@ const illustrations: Record<number, React.ReactNode> = {
   5: <PlaceholderIllustrationTiny />,
 };
 const transitionDuration = 500;
+
+const InfoButton = ({ activeIndex }: { activeIndex: number }) => {
+  const navigation = useNavigation();
+
+  if (activeIndex === 3)
+    return (
+      <Button
+        Icon={Icons.InfoRegular}
+        onPress={() =>
+          // TODO: FIX @react-navigation/native using Typescript
+          // @ts-ignore next-line
+          navigation.navigate("OnboardingSetupSteps", {
+            screen: ScreenName.OnboardingSetupDeviceInformation,
+          })
+        }
+      />
+    );
+
+  // TODO: Return activeIndex === last et activeIndex > 4
+
+  return null;
+};
 
 const ImageHeader = ({
   activeIndex,
@@ -91,7 +113,7 @@ const ImageHeader = ({
           height={20}
         >
           <Button Icon={Icons.ArrowLeftMedium} onPress={onBack} />
-          <Button Icon={Icons.InfoRegular} />
+          <InfoButton activeIndex={activeIndex} />
         </Flex>
         <Flex
           flex={1}
