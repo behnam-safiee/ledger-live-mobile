@@ -1,8 +1,8 @@
 import React, { useCallback } from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { Trans } from "react-i18next";
 import styled from "styled-components/native";
-import { useNavigation, useTheme } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { getOperationAmountNumber } from "@ledgerhq/live-common/lib/operation";
 import {
   getMainAccount,
@@ -17,22 +17,19 @@ import {
   AccountLike,
 } from "@ledgerhq/live-common/lib/types";
 
-import {Box, Flex, Text} from "@ledgerhq/native-ui";
+import { Box, Flex, InfiniteLoader, Text } from "@ledgerhq/native-ui";
 
 import debounce from "lodash/debounce";
-import LText from "./LText";
 import CurrencyUnitValue from "./CurrencyUnitValue";
 import CounterValue from "./CounterValue";
 
 import OperationIcon from "./OperationIcon";
 import { ScreenName } from "../const";
 import OperationRowDate from "./OperationRowDate";
-import LiveLogo from "../icons/LiveLogoIcon";
-import Spinning from "./Spinning";
 
 import perFamilyOperationDetails from "../generated/operationDetails";
 
-const ContainerTouchable = styled(Flex).attrs((p) => ({
+const ContainerTouchable = styled(Flex).attrs(p => ({
   height: "64px",
   flexDirection: "row",
   alignItems: "center",
@@ -50,6 +47,27 @@ const Wrapper = styled(Flex).attrs(p => ({
   marginRight: 0,
   opacity: p.isOptimistic ? 0.5 : 1,
 }))``;
+
+const SpinnerContainer = styled(Box).attrs({
+  height: 14,
+  mr: 2,
+  justifyContent: "center",
+})``;
+
+const BodyLeftContainer = styled(Flex).attrs({
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  alignItems: "flex-start",
+  flex: 1,
+})``;
+
+const BodyRightContainer = styled(Flex).attrs({
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  alignItems: "flex-end",
+  flexShrink: 0,
+  pl: 3,
+})``;
 
 type Props = {
   operation: Operation;
@@ -74,7 +92,6 @@ export default function OperationRow({
   isLast,
 }: Props) {
   const navigation = useNavigation();
-  const { colors } = useTheme();
 
   const goToOperationDetails = debounce(() => {
     const params = [
@@ -123,26 +140,27 @@ export default function OperationRow({
   const text = <Trans i18nKey={`operations.types.${operation.type}`} />;
   const isOptimistic = operation.blockHeight === null;
   const spinner = (
-    <View style={styles.spinner}>
-      <Spinning>
-        <LiveLogo color={colors.grey} size={10} />
-      </Spinning>
-    </View>
+    <SpinnerContainer>
+      <InfiniteLoader size={10} />
+    </SpinnerContainer>
   );
 
   return (
-    <ContainerTouchable as={TouchableOpacity} isLast={isLast} onPress={goToOperationDetails}>
-      <View style={isOptimistic ? styles.optimistic : null}>
+    <ContainerTouchable
+      as={TouchableOpacity}
+      isLast={isLast}
+      onPress={goToOperationDetails}
+    >
+      <Box opacity={isOptimistic ? 0.5 : 1}>
         <OperationIcon
           size={40}
           operation={operation}
           account={account}
           parentAccount={parentAccount}
         />
-      </View>
-
-      <Wrapper isOptimistic={isOptimistic}>
-        <View style={styles.bodyLeft}>
+      </Box>
+      <Wrapper opacity={isOptimistic ? 0.5 : 1}>
+        <BodyLeftContainer>
           <Text
             variant="body"
             fontWeight="semiBold"
@@ -153,7 +171,7 @@ export default function OperationRow({
           </Text>
 
           {isOptimistic ? (
-            <View style={styles.optimisticRow}>
+            <Flex flexDirection="row" alignItems="center">
               {spinner}
               <Text
                 numberOfLines={1}
@@ -169,18 +187,23 @@ export default function OperationRow({
                   }
                 />
               </Text>
-            </View>
+            </Flex>
           ) : (
-            <Text numberOfLines={1} color="neutral.c70" variant="paragraph" fontWeight="medium">
+            <Text
+              numberOfLines={1}
+              color="neutral.c70"
+              variant="paragraph"
+              fontWeight="medium"
+            >
               {text} <OperationRowDate date={operation.date} />
             </Text>
           )}
-        </View>
+        </BodyLeftContainer>
 
-        <View style={styles.bodyRight}>{renderAmountCellExtra()}</View>
+        <BodyRightContainer>{renderAmountCellExtra()}</BodyRightContainer>
 
         {amount.isZero() ? null : (
-          <View style={styles.bodyRight}>
+          <BodyRightContainer>
             <Text
               numberOfLines={1}
               color={valueColor}
@@ -194,7 +217,7 @@ export default function OperationRow({
                 alwaysShowSign
               />
             </Text>
-            <Text variant="paragraph" fontWeight="medium" color="neutral.c70"> 
+            <Text variant="paragraph" fontWeight="medium" color="neutral.c70">
               <CounterValue
                 showCode
                 date={operation.date}
@@ -205,49 +228,9 @@ export default function OperationRow({
                 placeholderProps={placeholderProps}
               />
             </Text>
-          </View>
+          </BodyRightContainer>
         )}
       </Wrapper>
     </ContainerTouchable>
   );
 }
-
-const styles = StyleSheet.create({
-  last: {
-    borderBottomWidth: 0,
-  },
-  body: {
-    alignItems: "flex-start",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    flex: 1,
-  },
-  topRow: {
-    fontSize: 14,
-    flex: 1,
-  },
-  bottomRow: {
-    fontSize: 14,
-    flex: 1,
-  },
-  optimisticRow: { flexDirection: "row", alignItems: "center" },
-  bodyLeft: {
-    alignItems: "flex-start",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    flexGrow: 1,
-    flexShrink: 1,
-  },
-  bodyRight: {
-    alignItems: "flex-end",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    flexShrink: 0,
-    paddingLeft: 6,
-  },
-  spinner: {
-    height: 14,
-    marginRight: 4,
-    justifyContent: "center",
-  },
-});
