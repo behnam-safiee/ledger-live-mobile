@@ -33,10 +33,10 @@ const ContainerTouchable = styled(Flex).attrs(p => ({
   height: "64px",
   flexDirection: "row",
   alignItems: "center",
-  marginBottom: p.isLast ? "24px" : "0px",
+  marginBottom: p.isLast && 7,
   px: 0,
   py: 6,
-}))``;
+}))<{ isLast?: boolean }>``;
 
 const Wrapper = styled(Flex).attrs(p => ({
   flex: 1,
@@ -46,7 +46,7 @@ const Wrapper = styled(Flex).attrs(p => ({
   marginLeft: 4,
   marginRight: 0,
   opacity: p.isOptimistic ? 0.5 : 1,
-}))``;
+}))<{ isOptimistic?: boolean }>``;
 
 const SpinnerContainer = styled(Box).attrs({
   height: 14,
